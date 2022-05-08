@@ -1,0 +1,51 @@
+from selenium import webdriver
+import shutil
+import time
+import os
+
+#chrom-driver PATH
+driver_path = 'C:/takahashi/stock/01_csvDL\chromDriver/chromedriver_win32/chromedriver'
+#DL PATH
+DL_path = 'C:/Users/Yoshitake Takahashi/Downloads/'
+#出力フォルダ PATH
+output_path = 'C:/takahashi/stock/01_csvDL/csv/'
+#DLページURL
+URL = 'https://kabuoji3.com/stock/'
+# 待機タイムアウト時間(秒)設定
+timeout_second = 10
+
+#「Chromeは自動テストソフトウェアによって制御されています」非表示
+options = webdriver.ChromeOptions()
+options.add_experimental_option("excludeSwitches", ['enable-automation'])
+
+for code in range(1300, 10000):
+    for year in range(2021, 2000, -1):
+        #chromDriver
+        driver = webdriver.Chrome(driver_path, chrome_options=options)
+        #DLページ検索
+        print(URL + str(code) + '/' + str(year) + '/')
+        driver.get(URL + str(code) + '/' + str(year) + '/')
+        #csvがない場合ループを抜ける
+        if driver.find_element_by_class_name("jp").text == '読み込みエラー':
+            driver.quit()
+            # 1秒待つ
+            time.sleep(1)
+            break
+        elif year == 2021:
+            #出力フォルダ作成
+            os.mkdir(output_path + str(code))
+        #ボタンクリック
+        element = driver. find_element_by_name("csv")
+        element.click()
+        element = driver. find_element_by_name("csv")
+        element.click()
+        # 4秒待つ
+        time.sleep(4)
+        #DLファイル移動
+        shutil.move(DL_path + str(code) + '_' + str(year) + '.csv', output_path + str(code) + '/')
+        
+        #1秒待つ
+        time.sleep(1)
+        
+        driver.quit()
+        
